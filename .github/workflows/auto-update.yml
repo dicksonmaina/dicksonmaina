@@ -1,32 +1,12 @@
-name: Auto-Update Portfolio
-
-on:
-  push:
-    branches: [ main ]
-  schedule:
-    - cron: '0 0 * * *'  # Daily at midnight
-
-jobs:
-  update-profile:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout profile repo
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Update repo metadata
-        run: |
-          # This workflow can be extended to auto-update topics,
-          # descriptions, and README badges across all repos
-          echo "Profile auto-update triggered"
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
 
       - name: Generate stats
+        env:
+          GITHUB_TOKEN: *** secrets.GITHUB_TOKEN }}
         run: |
-          curl -s https://api.github.com/users/dicksonmaina/repos?per_page=100 | \
+          curl -s -H "Authorization: token ***" \
+            https://api.github.com/users/dicksonmaina/repos?per_page=100 | \
             jq '[.[] | {name, stars: .stargazers_count, forks: .forks_count}]' \
             > stats.json
           git config user.name "github-actions[bot]"
